@@ -1,0 +1,15 @@
+### **Project: NSE Data Cleaning, Matching & Date-wise Reporting**
+
+
+**Description:**
+Developed an automated Excel-based solution to streamline NSE (National Stock Exchange) data processing, including:
+
+
+* Cleaning and standardizing raw market data
+* Matching records based on key identifiers (e.g., stock symbol, ISIN code, transaction type)
+* Generating date-wise summary reports and pivot tables
+* Implementing data validation checks to ensure accuracy
+* Automating report creation and dynamic sheet naming using VBA
+* Enabling scheduled updates and sharing reports with stakeholders
+
+---

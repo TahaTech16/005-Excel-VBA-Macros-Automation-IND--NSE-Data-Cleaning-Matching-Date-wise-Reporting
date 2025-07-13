@@ -1,0 +1,26 @@
+Initial STEP			
+Enter Formula Sheet Name	AUTOMOBILE		
+Enter RESULT Sheet Name	AUTO		
+CountIF Formula value	1		
+Series Name	EQ		
+Enter Positive (+ve)/Negative (-ve) Value OR y/n	y		
+Enter Date (From PLUSMINUS) To Work	02.6.21		
+ 1st Condition Enter Date Column No	84		Column 84 Value should be greater than or equat to Column 85
+1st Condtion Enter Previous Date Column No	85		
+2nd Condition Date Column No	265		
+2nd Condition Date Column Value>=59	>=59		
+3rd Condition-Final Date Value Column No	144		
+3rd Condition-Final Date value>=9	>=9		Left hand side from Decimal Point
+Copy Column 'A' Value & Paste in RESULT file	Sheet wise		
+2nd STEP			
+Enter Formula Sheet Name	AUTOMOBILE		
+Enter RESULT Sheet Name	AUTO		
+CountIF Formula value	1		
+Series Name	EQ		
+Enter Positive (+ve)/Negative (-ve) Value OR y/n	y		
+Enter Date (From PLUSMINUS) To Work	02.6.21		
+ 1st Condition Enter Date Column No	84		
+1st Condtion Enter Previous Date Column No	85		
+2nd Condition-Final Date Value Column No	144		
+ 2nd Condition-Final Date value>=10	>=10		
+Copy Column 'A' Value & Paste in RESULT file below one blank cell for same Date & Remove duplicate from below	Sheet wise		

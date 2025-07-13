@@ -1,0 +1,370 @@
+''****************
+'Project: NSE Data Cleaning,Matching & Date wise Report
+'Module:"VBAForFileCode" Cleaning,Matching & Date wise Report
+'Complete 1d,2d array example with matching data resize and preserve
+
+''Any types of Excel Automation, Report, Dashboard, VBA, Macros, MIS, Adv. Excel, SQL, Web Development using Django please contact me
+''Name:Mahetab
+''mahetabforwork@gmail.com
+''Mob:+91 9545302653
+''****************
+
+''------------------------------------------------------------
+
+'Option Explicit
+Option Base 1
+
+Dim var_array_1stSysmbol As Integer
+Dim var_array_2ndSysmbol As Integer
+Dim var_Date  As String
+
+
+
+Sub START_VBA_CODE_DEEPAK()
+    Call Main_VBAForFileCode
+End Sub
+
+Sub Main_VBAForFileCode()
+    
+    Dim array_1stSysmbol() As String
+    Dim array_2ndSysmbol() As String
+ 
+    var_array_1stSysmbol = 0
+    var_array_2ndSysmbol = 0
+    
+    Call ReplaceErrorValue
+    
+    ThisWorkbook.Activate
+    Call application_Disable
+    
+    Dim sheet_NSE_B8_value As Double
+    Dim sheet_NSE_B9_value As Double
+    
+    Dim sheet_NSE_B10_value As Double
+    Dim sheet_NSE_B12_value As Double
+    
+    var_Date = ThisWorkbook.Sheets("NSE").Range("B7").Value
+    
+    sheet_NSE_B8_value = ThisWorkbook.Sheets("NSE").Range("B8").Value
+    sheet_NSE_B9_value = ThisWorkbook.Sheets("NSE").Range("B9").Value
+    
+    sheet_NSE_B10_value = ThisWorkbook.Sheets("NSE").Range("B10").Value
+    sheet_NSE_B12_value = ThisWorkbook.Sheets("NSE").Range("B12").Value
+    
+    
+    
+'    Windows("sec_bhavdata_full.xlsm").Activate
+'    Sheets("Sheet1").Select
+    
+''//Check whether the sheet is there or not for CATEGORY_ALL workbook
+
+    Dim shtName_CATEGORY_ALL As Variant
+    shtName_CATEGORY_ALL = ThisWorkbook.Sheets("NSE").Range("B2").Value
+    
+    Windows("CATEGORY_ALL.xlsx").Activate
+    Sheets(1).Select
+    Dim exists As Boolean
+    
+    For i = 1 To Worksheets.Count
+        If Worksheets(i).Name = shtName_CATEGORY_ALL Then
+            MsgBox shtName_CATEGORY_ALL & " Sheet Present in CATEGORY_ALL Workbook"
+            Sheets(shtName_CATEGORY_ALL).Select
+            exists = True
+            Exit For
+        End If
+    Next i
+    
+    If Not exists Then
+        Worksheets.Add.Name = shtName_CATEGORY_ALL
+        MsgBox "New Sheet Created with the Name :" & shtName_CATEGORY_ALL & " In CATEGORY_ALL Workbook! Please enter SYMBOL"
+        Exit Sub
+    End If
+    
+    
+''//Check whether the sheet is there or not in RESULT workbook
+
+    Dim shtName_RESULT As Variant
+    shtName_RESULT = ThisWorkbook.Sheets("NSE").Range("B3").Value
+    
+    Windows("RESULT.xlsm").Activate
+    Sheets(1).Select
+    exists = False
+    
+    For i = 1 To Worksheets.Count
+        If Worksheets(i).Name = shtName_RESULT Then
+            MsgBox shtName_RESULT & " Sheet Present in RESULT Workbook !"
+            Sheets(shtName_RESULT).Select
+            exists = True
+            Exit For
+        End If
+    Next i
+    
+    If Not exists Then
+        Worksheets.Add.Name = shtName_RESULT
+        MsgBox "New Sheet Created with the Name :" & shtName_RESULT & " In RESULT Workbook !!"
+        
+    End If
+    
+    
+''//apply formula in "sec_bhavdata_full" file
+
+    Windows("sec_bhavdata_full.xlsm").Activate
+    Dim lRow, lCol As Long
+    
+    lRow = Sheets("RawData").Range("A104856").End(xlUp).Row
+    lCol = Sheets("RawData").Range("XFD2").End(xlToLeft).Column
+    
+    Cells(2, lCol + 1).Select
+    Cells(2, lCol + 1).Value = "Formula"
+    ColumnName = ActiveCell.Column
+    
+    
+    'Cells(3, lCol + 1).Select
+    
+    For i = 3 To lRow
+        Cells(i, ColumnName).Select
+        ActiveCell.Formula = WorksheetFunction.CountIf(Application.Workbooks("CATEGORY_ALL.xlsx").Sheets(shtName_CATEGORY_ALL).Range("A:A"), Range("A" & i).Value)
+    Next i
+
+    Windows("sec_bhavdata_full.xlsm").Activate
+    Dim shtED As Worksheet
+    
+    Set shtED = Sheets("RawData")
+    
+    'Dim array_EssDrug() As String ''array decalaration
+    Dim array_EssDrug() As Variant ''array decalaration
+    Dim lRowE, lColE As Long
+    
+    lRowE = Sheets("RawData").Range("A104856").End(xlUp).Row - 2
+    lColE = Sheets("RawData").Range("XFD2").End(xlToLeft).Column
+    
+    ReDim array_EssDrug(lRowE, lColE) ''array creation
+    
+  ''------- 1st Array
+  
+    For i = 1 To UBound(array_EssDrug)
+            
+            For j = 1 To lColE
+            
+                'array_EssDrug(i, j) = LCase(shtED.Cells(i + 2, j).Value)'//error:Type mismatch
+                'array_EssDrug(i, j) = Trim(shtED.Cells(i + 2, j).Value)'//error:Column B has space not working for number column
+                 array_EssDrug(i, j) = shtED.Cells(i + 2, j).Value
+                
+                
+            Next j
+            
+    Next i
+
+        
+    ReDim array_1stSysmbol(1 To lRowE)
+    ReDim array_2ndSysmbol(1 To lRowE)
+    
+''----- 1st STEP
+    
+    For i = 1 To UBound(array_EssDrug)
+        
+        If array_EssDrug(i, lColE) = 1 Then
+            If Trim(array_EssDrug(i, 2)) = "EQ" Then
+                If array_EssDrug(i, sheet_NSE_B8_value) >= array_EssDrug(i, sheet_NSE_B9_value) Then
+                    If array_EssDrug(i, sheet_NSE_B10_value) >= 59 Then
+                        If Len(Split(array_EssDrug(i, sheet_NSE_B12_value), ".")(0)) >= 9 Then
+                            var_array_1stSysmbol = var_array_1stSysmbol + 1
+                            'array_1stSysmbol(var_array_1stSysmbol) = array_EssDrug(i, 1)'//error:outof range
+                            'redim array_1stSysmbol(var_array_1stSysmbol) = array_EssDrug(i, 1)'//error:outof range
+                            array_1stSysmbol(var_array_1stSysmbol) = array_EssDrug(i, 1)
+                           
+                            'MsgBox ("Len>=9")
+                            
+                        End If
+                    End If
+                    
+                End If
+            End If
+        Else
+        
+        End If
+        
+            
+    Next i
+    
+ReDim Preserve array_1stSysmbol(1 To var_array_1stSysmbol)
+     
+''----- 2nd STEP
+     
+ For i = 1 To UBound(array_EssDrug)
+        
+        If array_EssDrug(i, lColE) = 1 Then
+            If Trim(array_EssDrug(i, 2)) = "EQ" Then
+                If array_EssDrug(i, sheet_NSE_B8_value) >= array_EssDrug(i, sheet_NSE_B9_value) Then
+                    'If array_EssDrug(i, sheet_NSE_B10_value) >= 59 Then
+                        If Len(Split(array_EssDrug(i, sheet_NSE_B12_value), ".")(0)) >= 10 Then
+                            var_array_2ndSysmbol = var_array_2ndSysmbol + 1
+                            array_2ndSysmbol(var_array_2ndSysmbol) = array_EssDrug(i, 1)
+                            'MsgBox ("Len>=10")
+                            
+                        End If
+                    'End If
+                    
+                End If
+            End If
+        Else
+        
+        End If
+        
+            
+    Next i
+     
+     
+     'ReDim Preserve array_1stSysmbol(1 To var_array_1stSysmbol)
+     ReDim Preserve array_2ndSysmbol(1 To var_array_2ndSysmbol)
+     
+
+''------- Paste Result in RESULT Workbook
+Windows("RESULT.xlsm").Activate
+Sheets(shtName_RESULT).Select
+result_lCol = Sheets(shtName_RESULT).Range("XFD2").End(xlToLeft).Column
+result_lCol = result_lCol + 1
+Cells(2, result_lCol).Value = var_Date
+Cells(3, result_lCol).Select
+
+     For i = 1 To UBound(array_1stSysmbol)
+        Cells(i + 2, result_lCol).Value = array_1stSysmbol(i)
+     
+     Next i
+     
+ result_lRow = Sheets(shtName_RESULT).Cells(1048576, result_lCol).End(xlUp).Row
+ result_lRow = result_lRow + 2
+ 
+     For i = 1 To UBound(array_2ndSysmbol)
+        Cells((i + result_lRow) - 1, result_lCol).Value = array_2ndSysmbol(i)
+     
+     Next i
+     
+     
+delete_Duplicate_lRow = Sheets(shtName_RESULT).Cells(1048576, result_lCol).End(xlUp).Row
+
+For i = 3 To delete_Duplicate_lRow
+    For j = i + 1 To delete_Duplicate_lRow
+        If Cells(i, result_lCol).Value = Cells(j, result_lCol).Value Then
+            Cells(j, result_lCol).Value = ""
+        End If
+        
+    Next j
+Next i
+    
+'    Range("A1").Select
+'    ThisWorkbook.Save
+'    Windows("CATEGORY_ALL.xlsx").Activate
+'    ActiveWorkbook.Save
+'
+'    Windows("RESULT.xlsm").Activate
+'    ActiveWorkbook.Save
+'
+'    Windows("sec_bhavdata_full.xlsm").Activate
+'    ActiveWorkbook.Save
+'
+'    Windows("PLUSMINUS.xlsm").Activate
+'    ActiveWorkbook.Save
+'
+'
+     Call application_Enable
+    
+    MsgBox ("VBA Macro Code Run Successfuly !!! Enjoy!")
+    
+
+End Sub
+    
+Sub ReplaceErrorValue()
+
+    ''replace #N/A and #VALUE!
+    Windows("sec_bhavdata_full.xlsm").Activate
+    Sheets("RawData").Select
+
+    Cells.Select
+    Application.CutCopyMode = False
+    
+'    ''-------Working-Replace with Blank
+'
+'    Selection.Replace What:="#VALUE!", Replacement:="", LookAt:=xlPart, _
+'        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+'        ReplaceFormat:=False
+'    Selection.Replace What:="#N/A", Replacement:="", LookAt:=xlPart, _
+'        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+'        ReplaceFormat:=False
+'    Application.CutCopyMode = False
+'    Range("A2").Select
+'
+
+''-------Working-Replace with Zero "0"
+    
+    Selection.Replace What:="#VALUE!", Replacement:="0", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Application.CutCopyMode = False
+    Range("A2").Select
+
+End Sub
+
+    
+Sub application_Disable()
+    
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    Application.Calculation = xlCalculationManual
+    
+End Sub
+
+Sub application_Enable()
+    
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+    Application.Calculation = xlCalculationAutomatic
+    
+End Sub
+    
+    
+
+Sub DataTypeExample()
+    Dim a As Long
+    Dim b As Double
+    Dim c As Integer
+    'Dim d As float ''//error:Data type NA
+    'Dim e As decimal ''//error:Data type NA
+    
+    Dim e As Double
+    
+    'a = CInt(12345678910.1235)//error:overflow
+    b = CDbl(12345678910.1235)
+    'c = CLng(12345678910.1235)//error:overflow
+    
+    Debug.Print a
+    Debug.Print b
+    Debug.Print c
+    
+    'e = trunc(12345678910.1235)//error:
+    'e = TRUNC(12345678910.1235, 0)//error:
+    
+    e = Replace("12345678910.1235", ".", "")
+    Debug.Print e
+    
+    
+    'Num = 1452.13
+    Num = 12345678910.1235
+    Debug.Print Num
+    
+    Debug.Print Len(Split(Num, ".")(0)) '<~~ Length of number before decimal
+    Debug.Print Len(Split(Num, ".")(1)) '<~~ Length of number After decimal
+    Dim beforPoint As Double
+    Dim afterPoint As Double
+    
+    beforPoint = Split(Num, ".")(0)
+    afterPoint = Split(Num, ".")(1)
+    
+    Debug.Print beforPoint
+    Debug.Print afterPoint
+
+End Sub
+
